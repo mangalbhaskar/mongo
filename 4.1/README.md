@@ -21,7 +21,7 @@
   - change directory ownership if required
 2. Modify the uid, and gid inside the container
 3. Create custom mongo docker image
-4. **Easiest way:** - modify the official mongodb docker file with the required path 
+4. **Easiest Wayout:** - modify the official mongodb docker file with the required path 
 
 
 ## Easiest Wayout
@@ -37,6 +37,36 @@
   source docker.buildimg.mongodb-userfix.sh Dockerfile.mongodb-userfix mongouid
   ```
 
+## Changes to the original docker file
+
+* Comment out the original way of creating the monogdb group and user
+```
+## add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
+# RUN groupadd -r mongodb && useradd -r -g mongodb mongodb
+```
+* Following is added instead:
+```
+## Easiest way to fix for mongodb uid and gid mapping
+## In specific case of Kali Linux: uid, gid 999 maps to user: systemd-coredump
+## /etc/passwd entry: systemd-coredump:x:999:999:systemd Core Dumper:/:/sbin/nologin
+## Fix: create the fix using the official docker image of mongodb
+## create a mongodb user and group on the host machine and pass the same uid, gid and names to the container
+
+ARG mongodb_user
+ENV MONGODB_USER $mongodb_user
+
+ARG mongodb_user_id
+ENV MONGODB_USER_ID $mongodb_user_id
+
+ARG mongodb_grp
+ENV MONGODB_GRP $mongodb_grp
+
+ARG mongodb_grp_id
+ENV MONGODB_GRP_ID $mongodb_grp_id
+
+RUN addgroup --gid $MONGODB_GRP_ID $MONGODB_GRP
+RUN useradd -r $MONGODB_USER --uid $MONGODB_USER_ID --gid $MONGODB_GRP_ID
+```
 
 **Notes:**
 * Mongo user in dockerfile added as default system user uid
