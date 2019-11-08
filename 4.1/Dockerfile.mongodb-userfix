@@ -1,4 +1,6 @@
-FROM ubuntu:bionic
+ARG linux_version
+
+FROM ubuntu:$linux_version
 
 ## add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 # RUN groupadd -r mongodb && useradd -r -g mongodb mongodb
@@ -45,7 +47,8 @@ ENV JSYAML_VERSION 3.13.0
 ## https://github.com/inversepath/usbarmory-debian-base_image/issues/9
 ## Error fix: gpg: keyserver receive failed: Cannot assign requested address
 
-ENV GPGCMD gpg2
+ARG gpgcmd
+ENV GPGCMD $gpgcmd
 
 RUN set -ex; \
   \
@@ -53,7 +56,7 @@ RUN set -ex; \
   apt-get install -y --no-install-recommends \
     wget \
   ; \
-  if ! command -v gpg > /dev/null; then \
+  if ! command -v $gpgcmd > /dev/null; then \
     apt-get install -y --no-install-recommends gnupg dirmngr gnupg2; \
   fi; \
   rm -rf /var/lib/apt/lists/*; \
@@ -77,8 +80,9 @@ RUN set -ex; \
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-ENV GPGCMD gpg2
-ENV GPG_KEYS E162F504A20CDF15827F718D4B7C549A058F8B6B
+ARG gpg_keys
+ENV GPGCMD $gpgcmd
+ENV GPG_KEYS $gpg_keys
 RUN set -ex; \
   export GNUPGHOME="$(mktemp -d)"; \
   for key in $GPG_KEYS; do \
