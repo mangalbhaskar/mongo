@@ -31,10 +31,13 @@
 
 
 ## Usage
-* `source docker.buildimg.sh <docker-file-name> <docker-image-tag>`
+* `source docker.buildimg.mongodb-userfix.sh <mongodb-version> <docker-image-tag>`
 * **Example:**
   ```bash
-  source docker.buildimg.mongodb-userfix.sh Dockerfile.mongodb-userfix mongouid
+	## For Ubuntu 16.04
+	source docker.buildimg.mongodb-userfix.sh 4.0 mongouid
+	## For Ubuntu 18.04, Kali 2019.2
+	source docker.buildimg.mongodb-userfix.sh 4.1 mongouid
   ```
 
 ## Changes to the original docker file
