@@ -1,6 +1,4 @@
-ARG linux_version
-
-FROM ubuntu:$linux_version
+FROM ubuntu:bionic
 
 ## add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 # RUN groupadd -r mongodb && useradd -r -g mongodb mongodb
@@ -80,9 +78,8 @@ RUN set -ex; \
 
 RUN mkdir /docker-entrypoint-initdb.d
 
-ARG gpg_keys
 ENV GPGCMD $gpgcmd
-ENV GPG_KEYS $gpg_keys
+ENV GPG_KEYS E162F504A20CDF15827F718D4B7C549A058F8B6B
 RUN set -ex; \
   export GNUPGHOME="$(mktemp -d)"; \
   for key in $GPG_KEYS; do \
